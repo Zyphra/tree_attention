@@ -14,7 +14,7 @@ import time
 import pickle
 
 # slurm auto initializes this (see https://jax.readthedocs.io/en/latest/multi_process.html#initializing-the-cluster if not using slurm)
-#jax.distributed.initialize()
+jax.distributed.initialize()
 
 mesh = Mesh(mesh_utils.create_device_mesh(jax.device_count()), axis_names=('i',))
 seq_spec = P(None, 'i', None, None)
