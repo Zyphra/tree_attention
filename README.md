@@ -33,3 +33,6 @@ pip install flash-attn-jax
 
 ### Running experiments
 
+```bash
+python tree_shard_test.py
+```
