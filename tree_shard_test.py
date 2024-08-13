@@ -42,8 +42,7 @@ def tree_decode(q, k, v):
     def flash_num_lse(q, k, v, config=dict(softmax_scale=1.0, is_causal=False, window_size=(-1, -1))):
         tup = _flash_mha_vjp.fwd(q, k, v, config)
         res, lse = tup[1][3], tup[1][4]
-        num = res * jnp.exp(lse)
-        return num, lse
+        return res, lse
     
     loc_res, loc_lse = flash_num_lse(q, k, v)
     a_max_global = lax.pmax(loc_lse, axis_name='i')
