@@ -13,7 +13,7 @@ import time
 import pickle
 
 # slurm auto initializes this (see https://jax.readthedocs.io/en/latest/multi_process.html#initializing-the-cluster if not using slurm)
-jax.distributed.initialize()
+#jax.distributed.initialize()
 
 mesh = Mesh(mesh_utils.create_device_mesh(jax.device_count(),), axis_names=('i',))
 seq_spec = P(None, 'i', None, None)
@@ -39,12 +39,12 @@ out_specs=P(None, None, None,None)
 @partial(shard_map, mesh=mesh, in_specs=in_specs, out_specs=out_specs, check_rep=False)
 def tree_decode(q, k, v):
 
-    def flash_num_lse(q, k, v, config=dict(softmax_scale=1.0, is_causal=False, window_size=(-1, -1))):
+    def flash_res_lse(q, k, v, config=dict(softmax_scale=1.0, is_causal=False, window_size=(-1, -1))):
         tup = _flash_mha_vjp.fwd(q, k, v, config)
         res, lse = tup[1][3], tup[1][4]
         return res, lse
     
-    loc_res, loc_lse = flash_num_lse(q, k, v)
+    loc_res, loc_lse = flash_res_lse(q, k, v)
     a_max_global = lax.pmax(loc_lse, axis_name='i')
     num_global = lax.psum(loc_res * jnp.exp(loc_lse - a_max_global), axis_name='i')
     den_global = lax.psum(jnp.exp(loc_lse - a_max_global), axis_name='i')
