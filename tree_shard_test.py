@@ -13,7 +13,7 @@ import time
 import pickle
 
 # slurm auto initializes this (see https://jax.readthedocs.io/en/latest/multi_process.html#initializing-the-cluster if not using slurm)
-jax.distributed.initialize()
+#jax.distributed.initialize()
 
 mesh = Mesh(mesh_utils.create_device_mesh(jax.device_count(),), axis_names=('i',))
 seq_spec = P(None, 'i', None, None)
@@ -41,18 +41,15 @@ def tree_decode(q, k, v):
 
     def flash_num_lse(q, k, v, config=dict(softmax_scale=1.0, is_causal=False, window_size=(-1, -1))):
         tup = _flash_mha_vjp.fwd(q, k, v, config)
-        res,lse = tup[1][3],tup[1][4]
+        res, lse = tup[1][3], tup[1][4]
         num = res * jnp.exp(lse)
         return num, lse
-
-    loc_num, loc_denom = flash_num_lse(q, k, v)
-    a_max_local = jnp.amax(loc_denom, keepdims=True)
-    a_max_global = lax.pmax(a_max_local, axis_name='i')
-    tmp = jnp.exp(loc_denom - a_max_global)
-    num_chunk = loc_num * jnp.exp(-a_max_global)
-    num_global = lax.psum(num_chunk, axis_name='i')
-    s_global = lax.psum(tmp, axis_name='i')
-    return num_global / s_global
+    
+    loc_res, loc_lse = flash_num_lse(q, k, v)
+    a_max_global = lax.pmax(loc_lse, axis_name='i')
+    num_global = lax.psum(loc_res * jnp.exp(loc_lse - a_max_global), axis_name='i')
+    den_global = lax.psum(jnp.exp(loc_lse - a_max_global), axis_name='i')
+    return num_global / den_global
 
 if __name__ == '__main__':
 
