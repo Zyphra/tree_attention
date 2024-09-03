@@ -14,6 +14,8 @@
     </a>
 </p>
 
+This repository contains a simple example of tree attention in Jax, and compares to a simple Jax implementation of ring attention. For a full implementation of tree attention in PyTorch, see https://github.com/lucidrains/ring-attention-pytorch.
+
 Self-attention is the core mathematical operation of modern transformer architectures and is also
 a significant computational bottleneck due to its quadratic complexity in the sequence length. In
 this work, we derive the scalar energy function whose gradient computes the self-attention block,
@@ -24,6 +26,10 @@ through a tree reduction. Our algorithm, for parallelizing attention computation
 GPUs enables cross-device decoding to be performed asymptotically faster (up to 8× faster in our
 experiments) than alternative approaches such as Ring Attention, while also requiring significantly
 less communication volume and incurring 2× less peak memory.
+
+**Ring Attention**    |    **Tree Attention**       |  **Legend**
+:-------------------------:|:-------------------------:|:-------------------------:
+<img src="images/ring.png" width="1500" alt="ring-attention">     |  <img src="images/tree.png" width="1800" alt="tree-attention">    |    <img src="images/legend.png" width="525" alt="legend">
 
 Our paper can be found here: [https://arxiv.org/pdf/2408.04093].
 
@@ -46,4 +52,18 @@ pip install flash-attn-jax
 To run a single layer tree attention experiment, you can launch the following code. You can specify various sequence lengths, head sizes and number of heads in the file.
 ```bash
 python tree_shard_test.py
+```
+
+## Cite As
+
+```bibtex
+@misc{shyam2024treeattentiontopologyawaredecoding,
+      title={Tree Attention: Topology-aware Decoding for Long-Context Attention on GPU clusters}, 
+      author={Vasudev Shyam and Jonathan Pilault and Emily Shepperd and Quentin Anthony and Beren Millidge},
+      year={2024},
+      eprint={2408.04093},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2408.04093}, 
+}
 ```
