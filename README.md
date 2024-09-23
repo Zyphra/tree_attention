@@ -31,7 +31,6 @@ less communication volume and incurring 2× less peak memory.
 :-------------------------:|:-------------------------:|:-------------------------:
 <img src="images/ring.png" width="1500" alt="ring-attention">     |  <img src="images/tree.png" width="1800" alt="tree-attention">    |    <img src="images/legend.png" width="525" alt="legend">
 
-Our paper can be found here: [https://arxiv.org/pdf/2408.04093].
 
 ## Requirements
 
@@ -54,16 +53,3 @@ To run a single layer tree attention experiment, you can launch the following co
 python tree_shard_test.py
 ```
 
-## Cite As
-
-```bibtex
-@misc{shyam2024treeattentiontopologyawaredecoding,
-      title={Tree Attention: Topology-aware Decoding for Long-Context Attention on GPU clusters}, 
-      author={Vasudev Shyam and Jonathan Pilault and Emily Shepperd and Quentin Anthony and Beren Millidge},
-      year={2024},
-      eprint={2408.04093},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2408.04093}, 
-}
-```
